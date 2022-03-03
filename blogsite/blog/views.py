@@ -1,4 +1,5 @@
 
+from pyexpat import model
 from django.shortcuts import render
 
 # Create your views here.
@@ -10,6 +11,8 @@ from rest_framework.views import APIView
 
 from . import models
 from blog.serializer import BlogSerialzer
+
+import blog
 
 
 class GetorCreateBlog(APIView):
@@ -35,6 +38,49 @@ class GetorCreateBlog(APIView):
         return Response(status=400,data=
             blog_obj.errors
         )
+
+
+class GetPutDeleteBlogView(APIView):
+    def get (self,request,id):
+        try:
+
+            blog_data=models.Blog.objects.get(id=id)
+            blog_serialized_data=BlogSerialzer(blog_data)
+
+            return Response(data={'data':blog_serialized_data.data})
+        except models.Blog.DoesNotExist:
+            return Response(data={'data':'not present'},status=400)
+
+    def put (self, request,id):
+        try:
+            request_data=request.data
+            blog_data=models.Blog.objects.get(id=id)
+            blog_serialized_data=BlogSerialzer(blog_data,data=request_data)
+            if blog_serialized_data.is_valid():
+                blog_serialized_data.save()
+                return Response(data={'data':blog_serialized_data.data})
+            return Response (data={'error':blog_serialized_data.errors})
+        except models.Blog.DoesNotExist:
+            return Response (data={'data':'not present'})
+
+    def delete(self,request,id):
+        try:
+            blog_data=models.Blog.objects.get(id=id)
+            blog_data.delete()
+            return Response(data={'status':'deleted'})
+        except models.Blog.DoesNotExist:
+            return Response(data={'data':'not present'})
+    
+
+                
+        
+
+
+        
+
+
+
+
 
         
 
