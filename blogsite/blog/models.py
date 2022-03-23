@@ -10,6 +10,9 @@ class Blog(models.Model):
     title=models.CharField(max_length=50)
     content=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
+    image_url=models.URLField(null=True)
+    cover_image=models.ImageField(null=True,blank=True)
+    id=models.AutoField(primary_key=True,editable=False)
 
     def __str__(self):
         return (self.title)
